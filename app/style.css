@@ -8,6 +8,10 @@ datalist {
   width: 100%;
 }
 
+label {
+  cursor: pointer;
+}
+
 .slider {
   width: 250px;
   margin-bottom: 30px;
