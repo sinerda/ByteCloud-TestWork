@@ -36,16 +36,19 @@ $(function () {
     }
   }
 
+  function FinalActions(Company, Price, Text) {
+    Price = Number(Price.toFixed(2));
+    Text.text(Price);
+    FlipMobile(Company, Price);
+  }
+
   function BackblazeValues(Storage, Transfer) {
     backblazePrice = (Storage * 0.005) + (Transfer * 0.01);
-
     if (backblazePrice < 7) {
       backblazePrice = 7;
     }
 
-    backblazePrice = Number(backblazePrice.toFixed(2));
-    backblazeText.text(backblazePrice);
-    FlipMobile(backblaze, backblazePrice);
+    FinalActions(backblaze, backblazePrice, backblazeText);
   }
 
   function BunnyValues(Storage, Transfer) {
@@ -59,14 +62,11 @@ $(function () {
         bunnyPrice = (Storage * 0.02) + (Transfer * 0.01);
         break;
     }
-
     if (bunnyPrice > 10) {
       bunnyPrice = 10;
     }
 
-    bunnyPrice = Number(bunnyPrice.toFixed(2));
-    bunnyText.text(bunnyPrice);
-    FlipMobile(bunny, bunnyPrice);
+    FinalActions(bunny, bunnyPrice, bunnyText);
   }
 
   function ScalewayValues(Storage, Transfer) {
@@ -80,39 +80,34 @@ $(function () {
         case 'multi':
           if (Storage <= 75) {
             scalewayPrice = (Transfer - 75) * 0.02;
-          }
-          else if (Transfer <= 75) {
+          } else if (Transfer <= 75) {
             scalewayPrice = (Storage - 75) * 0.06;
+          } else {
+            scalewayPrice = ((Storage - 75) * 0.06) + ((Transfer - 75) * 0.02);
+            break;
           }
-          else scalewayPrice = ((Storage - 75) * 0.06) + ((Transfer - 75) * 0.02);
-          break;
         case 'single':
           if (Storage <= 75) {
             scalewayPrice = (Transfer - 75) * 0.02;
-          }
-          else if (Transfer <= 75) {
+          } else if (Transfer <= 75) {
             scalewayPrice = (Storage - 75) * 0.03;
+          } else {
+            scalewayPrice = ((Storage - 75) * 0.03) + ((Transfer - 75) * 0.02);
+            break;
           }
-          else scalewayPrice = ((Storage - 75) * 0.03) + ((Transfer - 75) * 0.02);
-          break;
       }
     }
 
-    scalewayPrice = Number(scalewayPrice.toFixed(2));
-    scalewayText.text(scalewayPrice);
-    FlipMobile(scaleway, scalewayPrice);
+    FinalActions(scaleway, scalewayPrice, scalewayText);
   }
 
   function VultrValues(Storage, Transfer) {
     vultrPrice = (Storage * 0.01) + (Transfer * 0.01);
-
     if (vultrPrice < 5) {
       vultrPrice = 5;
     }
-    
-    vultrPrice = Number(vultrPrice.toFixed(2));
-    vultrText.text(vultrPrice);
-    FlipMobile(vultr, vultrPrice);
+
+    FinalActions(vultr, vultrPrice, vultrText);
   }
 
   function ChangeDate() {
