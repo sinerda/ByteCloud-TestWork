@@ -110,19 +110,7 @@ $(function () {
     FinalActions(vultr, vultrPrice, vultrText);
   }
 
-  function ChangeDate() {
-    let
-      Storage = $('#storage').val(),
-      Transfer = $('#transfer').val();
-
-    storageTitle.text(Storage);
-    transferTitle.text(Transfer);
-
-    BackblazeValues(Storage, Transfer);
-    BunnyValues(Storage, Transfer);
-    ScalewayValues(Storage, Transfer);
-    VultrValues(Storage, Transfer);
-
+  function ColoringMinimumValue() {
     let priceArray = [backblazePrice, bunnyPrice, scalewayPrice, vultrPrice];
     let graphArray = [backblaze, bunny, scaleway, vultr];
     // убираем предыдущие классы
@@ -152,5 +140,21 @@ $(function () {
     for (let i = 0; i < lowArray.length; i++) {
       lowArray[i].toggleClass('low-price');
     }
+  }
+
+  function ChangeDate() {
+    let
+      Storage = $('#storage').val(),
+      Transfer = $('#transfer').val();
+
+    storageTitle.text(Storage);
+    transferTitle.text(Transfer);
+
+    BackblazeValues(Storage, Transfer);
+    BunnyValues(Storage, Transfer);
+    ScalewayValues(Storage, Transfer);
+    VultrValues(Storage, Transfer);
+
+    ColoringMinimumValue();
   }
 })
