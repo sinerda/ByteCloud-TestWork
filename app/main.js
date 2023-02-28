@@ -26,22 +26,27 @@ $(function () {
     input[name=bunny], 
     input[name=scaleway]`).change(ChangeDate);
 
-  function FlipMobile(Company, Price) {
-    const _630px = window.matchMedia("(max-width: 630px)");
+  // 
+  // Основная функция
+  function ChangeDate() {
+    let
+      Storage = $('#storage').val(),
+      Transfer = $('#transfer').val();
 
-    if (!_630px.matches) {
-      Company.css('height', Price * 4);
-    } else {
-      Company.css('width', Price * 5);
-    }
+    storageTitle.text(Storage);
+    transferTitle.text(Transfer);
+
+    BackblazeValues(Storage, Transfer);
+    BunnyValues(Storage, Transfer);
+    ScalewayValues(Storage, Transfer);
+    VultrValues(Storage, Transfer);
+
+    ColoringMinimumValue();
   }
 
-  function FinalActions(Company, Price, Text) {
-    Price = Number(Price.toFixed(2));
-    Text.text(Price);
-    FlipMobile(Company, Price);
-  }
-
+  // 
+  // Алгоритмы подсчёта значений
+  // - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - - 
   function BackblazeValues(Storage, Transfer) {
     backblazePrice = (Storage * 0.005) + (Transfer * 0.01);
     if (backblazePrice < 7) {
@@ -109,6 +114,26 @@ $(function () {
 
     FinalActions(vultr, vultrPrice, vultrText);
   }
+  // - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - - 
+
+  // 
+  // Вспомогательные функции
+  // - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - - 
+  function FinalActions(Company, Price, Text) {
+    Price = Number(Price.toFixed(2));
+    Text.text(Price);
+    FlipMobile(Company, Price);
+  }
+
+  function FlipMobile(Company, Price) {
+    const _630px = window.matchMedia("(max-width: 630px)");
+
+    if (!_630px.matches) {
+      Company.css('height', Price * 4);
+    } else {
+      Company.css('width', Price * 5);
+    }
+  }
 
   function ColoringMinimumValue() {
     let priceArray = [backblazePrice, bunnyPrice, scalewayPrice, vultrPrice];
@@ -141,20 +166,5 @@ $(function () {
       lowArray[i].toggleClass('low-price');
     }
   }
-
-  function ChangeDate() {
-    let
-      Storage = $('#storage').val(),
-      Transfer = $('#transfer').val();
-
-    storageTitle.text(Storage);
-    transferTitle.text(Transfer);
-
-    BackblazeValues(Storage, Transfer);
-    BunnyValues(Storage, Transfer);
-    ScalewayValues(Storage, Transfer);
-    VultrValues(Storage, Transfer);
-
-    ColoringMinimumValue();
-  }
+  // - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - - 
 })
