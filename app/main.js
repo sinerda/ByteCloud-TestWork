@@ -1,34 +1,53 @@
 "use strict";
 
 $(function () {
+  // 
+  // Объекты
+  let backblaze = {
+    price: 0,
+    text: $('#backblaze-text span'),
+    chart: $('#backblaze'),
+
+    calculate(Storage, Transfer) {
+      this.price = (Storage * 0.005) + (Transfer * 0.01);
+      if (this.price < 7) {
+        this.price = 7;
+      }
+      return this.price;
+    },
+    rendering(Storage, Transfer) {
+      this.calculate(Storage, Transfer);
+      finalActions(this.chart, this.price, this.text);
+    }
+  }
+
+  // - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - - 
   const
-    backblaze = $('#backblaze'),
+    // backblaze = $('#backblaze'),
     bunny = $('#bunny'),
     scaleway = $('#scaleway'),
-    vultr = $('#vultr');
-  const
-    backblazeText = $('#backblaze-text span'),
+    vultr = $('#vultr'),
+    // backblazeText = $('#backblaze-text span'),
     bunnyText = $('#bunny-text span'),
     scalewayText = $('#scaleway-text span'),
     vultrText = $('#vultr-text span');
   let
     storageTitle = $('#storage-title span'),
-    transferTitle = $('#transfer-title span');
-  let
-    backblazePrice,
+    transferTitle = $('#transfer-title span'),
+    // backblazePrice,
     bunnyPrice,
     scalewayPrice,
     vultrPrice;
 
-  $().ready(ChangeDate);
+  $().ready(changeDate);
   $(`#storage, 
     #transfer, 
     input[name=bunny], 
-    input[name=scaleway]`).change(ChangeDate);
+    input[name=scaleway]`).change(changeDate);
 
   // 
   // Основная функция
-  function ChangeDate() {
+  function changeDate() {
     let
       Storage = $('#storage').val(),
       Transfer = $('#transfer').val();
@@ -36,27 +55,18 @@ $(function () {
     storageTitle.text(Storage);
     transferTitle.text(Transfer);
 
-    BackblazeValues(Storage, Transfer);
-    BunnyValues(Storage, Transfer);
-    ScalewayValues(Storage, Transfer);
-    VultrValues(Storage, Transfer);
+    backblaze.rendering(Storage, Transfer);
+    bunnyValues(Storage, Transfer);
+    scalewayValues(Storage, Transfer);
+    vultrValues(Storage, Transfer);
 
-    ColoringMinimumValue();
+    coloringMinimumValue();
   }
 
   // 
   // Алгоритмы подсчёта значений
   // - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - - 
-  function BackblazeValues(Storage, Transfer) {
-    backblazePrice = (Storage * 0.005) + (Transfer * 0.01);
-    if (backblazePrice < 7) {
-      backblazePrice = 7;
-    }
-
-    FinalActions(backblaze, backblazePrice, backblazeText);
-  }
-
-  function BunnyValues(Storage, Transfer) {
+  function bunnyValues(Storage, Transfer) {
     let bunnyCheck = $('input[name=bunny]:checked').val();
 
     switch (bunnyCheck) {
@@ -71,10 +81,10 @@ $(function () {
       bunnyPrice = 10;
     }
 
-    FinalActions(bunny, bunnyPrice, bunnyText);
+    finalActions(bunny, bunnyPrice, bunnyText);
   }
 
-  function ScalewayValues(Storage, Transfer) {
+  function scalewayValues(Storage, Transfer) {
     if ((Storage <= 75) && (Transfer <= 75)) {
       scalewayPrice = 0;
     }
@@ -103,29 +113,29 @@ $(function () {
       }
     }
 
-    FinalActions(scaleway, scalewayPrice, scalewayText);
+    finalActions(scaleway, scalewayPrice, scalewayText);
   }
 
-  function VultrValues(Storage, Transfer) {
+  function vultrValues(Storage, Transfer) {
     vultrPrice = (Storage * 0.01) + (Transfer * 0.01);
     if (vultrPrice < 5) {
       vultrPrice = 5;
     }
 
-    FinalActions(vultr, vultrPrice, vultrText);
+    finalActions(vultr, vultrPrice, vultrText);
   }
   // - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - - 
 
   // 
   // Вспомогательные функции
   // - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - - 
-  function FinalActions(Company, Price, Text) {
+  function finalActions(Company, Price, Text) {
     Price = Number(Price.toFixed(2));
     Text.text(Price);
-    FlipMobile(Company, Price);
+    chartDrawing(Company, Price);
   }
 
-  function FlipMobile(Company, Price) {
+  function chartDrawing(Company, Price) {
     const _630px = window.matchMedia("(max-width: 630px)");
 
     if (!_630px.matches) {
@@ -135,9 +145,10 @@ $(function () {
     }
   }
 
-  function ColoringMinimumValue() {
-    let priceArray = [backblazePrice, bunnyPrice, scalewayPrice, vultrPrice];
-    let graphArray = [backblaze, bunny, scaleway, vultr];
+  function coloringMinimumValue() {
+    let priceArray = [backblaze.price, bunnyPrice, scalewayPrice, vultrPrice];
+    let graphArray = [backblaze.chart, bunny, scaleway, vultr];
+
     // убираем предыдущие классы
     for (let i = 0; i < graphArray.length; i++) {
       graphArray[i].removeClass('low-price');
