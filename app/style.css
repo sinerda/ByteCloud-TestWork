@@ -1,3 +1,8 @@
+html {
+  background-color: lightslategray;
+  height: 100vh;
+}
+
 div {
   box-sizing: border-box;
 }
@@ -96,15 +101,18 @@ label {
     display: flex;
     flex-direction: row-reverse;
   }
+
   .date__info {
     display: block;
     width: 30%;
   }
+
   .date__chart {
     flex-direction: column;
     height: 25%;
     align-items: flex-start;
   }
+
   .graph__chart {
     height: 50px;
   }

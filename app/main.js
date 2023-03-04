@@ -5,21 +5,25 @@ $(function () {
   class Company {
 
     constructor(nameCompany) {
+      this.chart          = $(`#${nameCompany}`);
+      this.textLablePrice = $(`#${nameCompany}-text span`);
       this.price = 0;
-      this.text = $(`#${nameCompany}-text span`);
-      this.chart = $(`#${nameCompany}`);
     }
 
-    rendering(storage, transfer) {
-      this.calculate(storage, transfer);
-      this.finalActions(this.chart, this.price, this.text);
+    update(storage, transfer) {
+      this.calculation(storage, transfer);
+      this.priceFormatting(this.price);
+      this.rendering();
+    }
+
+    priceFormatting(inputPrice) {
+      this.price = Number(inputPrice.toFixed(2));
+    }
+
+    rendering() {
+      this.textLablePrice.text(this.price);
+      this.chartDrawing(this.chart, this.price);
     };
-
-    finalActions(company, price, text) {
-      price = Number(price.toFixed(2));
-      text.text(price);
-      this.chartDrawing(company, price);
-    }
 
     chartDrawing(company, price) {
       const _630px = window.matchMedia("(max-width: 630px)");
@@ -35,19 +39,18 @@ $(function () {
 
   class Backblaze extends Company {
 
-    calculate(storage, transfer) {
+    calculation(storage, transfer) {
       this.price = (storage * 0.005) + (transfer * 0.01);
       if (this.price < 7) {
         this.price = 7;
       }
-      return this.price;
     }
 
   }
 
   class Bunny extends Company {
 
-    calculate(storage, transfer) {
+    calculation(storage, transfer) {
       let bunnyCheck = $('input[name=bunny]:checked').val();
 
       switch (bunnyCheck) {
@@ -61,14 +64,13 @@ $(function () {
       if (this.price > 10) {
         this.price = 10;
       }
-      return this.price;
     }
 
   }
 
   class Scaleway extends Company {
 
-    calculate(storage, transfer) {
+    calculation(storage, transfer) {
       if ((storage <= 75) && (transfer <= 75)) {
         this.price = 0;
       }
@@ -96,19 +98,17 @@ $(function () {
             }
         }
       }
-      return this.price;
     }
 
   }
 
   class Vultr extends Company {
 
-    calculate(storage, transfer) {
+    calculation(storage, transfer) {
       this.price = (storage * 0.01) + (transfer * 0.01);
       if (this.price < 5) {
         this.price = 5;
       }
-      return this.price;
     }
 
   }
@@ -142,14 +142,14 @@ $(function () {
     storageTitle.text(storage);
     transferTitle.text(transfer);
 
-    backblaze.rendering(storage, transfer);
-    bunny.rendering(storage, transfer);
-    scaleway.rendering(storage, transfer);
-    vultr.rendering(storage, transfer);
+    backblaze.update(storage, transfer);
+    bunny.update(storage, transfer);
+    scaleway.update(storage, transfer);
+    vultr.update(storage, transfer);
 
     coloringMinimumValue();
   }
-  // - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - - 
+  //  
 
   // 
   // Вспомогательные функции
