@@ -5,7 +5,7 @@ $(function () {
   class Company {
 
     constructor(nameCompany) {
-      this.chart          = $(`#${nameCompany}`);
+      this.chart = $(`#${nameCompany}`);
       this.textLablePrice = $(`#${nameCompany}-text span`);
       this.price = 0;
     }
@@ -34,6 +34,46 @@ $(function () {
         company.css('width', price * 5);
       }
     }
+
+    coloringMinimumValue() {
+      let priceArray = [backblaze.price, bunny.price, scaleway.price, vultr.price];
+      let graphArray = [backblaze.chart, bunny.chart, scaleway.chart, vultr.chart];
+
+      // убираем предыдущие классы
+      for (let i = 0; i < graphArray.length; i++) {
+        graphArray[i].removeClass('low-price');
+      }
+      // Ищем минимальное число
+      let totalLow = priceArray[0];
+      for (let i = 1; i < priceArray.length; i++) {
+        if (priceArray[i] < priceArray[i - 1]) {
+          if (priceArray[i] < totalLow) {
+            totalLow = priceArray[i];
+          }
+        }
+        else if (priceArray[i - 1] < totalLow) {
+          totalLow = priceArray[i - 1];
+        }
+      }
+      // Заполняем массив элементами с мин. значением
+      let lowArray = [];
+      for (let i = 0; i < priceArray.length; i++) {
+        if (priceArray[i] == totalLow) {
+          lowArray.push(graphArray[i]);
+        }
+      }
+      // цепляем классы 
+      for (let i = 0; i < lowArray.length; i++) {
+        lowArray[i].toggleClass('low-price');
+      }
+    }
+
+    // static updateAllCompany(storage, transfer) {
+    //   const companies = [backblaze, bunny, scaleway, vultr];
+    //   for (let i = 0; i < companies.length; i++) {
+    //     companies[i].this.update(storage, transfer);        
+    //   }
+    // }
 
   }
 
@@ -119,7 +159,8 @@ $(function () {
     backblaze = new Backblaze('backblaze'),
     bunny = new Bunny('bunny'),
     scaleway = new Scaleway('scaleway'),
-    vultr = new Vultr('vultr');
+    vultr = new Vultr('vultr'),
+    company = new Company;
   // 
 
   let
@@ -147,44 +188,7 @@ $(function () {
     scaleway.update(storage, transfer);
     vultr.update(storage, transfer);
 
-    coloringMinimumValue();
+    company.coloringMinimumValue();
   }
-  //  
 
-  // 
-  // Вспомогательные функции
-  // - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - - 
-  function coloringMinimumValue() {
-    let priceArray = [backblaze.price, bunny.price, scaleway.price, vultr.price];
-    let graphArray = [backblaze.chart, bunny.chart, scaleway.chart, vultr.chart];
-
-    // убираем предыдущие классы
-    for (let i = 0; i < graphArray.length; i++) {
-      graphArray[i].removeClass('low-price');
-    }
-    // Ищем минимальное число
-    let totalLow = priceArray[0];
-    for (let i = 1; i < priceArray.length; i++) {
-      if (priceArray[i] < priceArray[i - 1]) {
-        if (priceArray[i] < totalLow) {
-          totalLow = priceArray[i];
-        }
-      }
-      else if (priceArray[i - 1] < totalLow) {
-        totalLow = priceArray[i - 1];
-      }
-    }
-    // Заполняем массив элементами с мин. значением
-    let lowArray = [];
-    for (let i = 0; i < priceArray.length; i++) {
-      if (priceArray[i] == totalLow) {
-        lowArray.push(graphArray[i]);
-      }
-    }
-    // цепляем классы 
-    for (let i = 0; i < lowArray.length; i++) {
-      lowArray[i].toggleClass('low-price');
-    }
-  }
-  // - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - - 
 })
