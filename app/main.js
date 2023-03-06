@@ -8,6 +8,14 @@ class Company {
     this.price = 0;
   }
 
+  static updateAllCompany(storage, transfer) {
+    const companies = [backblaze, bunny, scaleway, vultr];
+
+    companies.forEach((current) => {
+      current.update(storage, transfer);
+    }, this)
+  }
+
   update(storage, transfer) {
     this.calculation(storage, transfer);
     this.priceFormatting(this.price);
@@ -33,13 +41,13 @@ class Company {
     }
   }
 
-  coloringMinimumValue() {
+  static coloringMinimumValue() {
     let priceArray = [backblaze.price, bunny.price, scaleway.price, vultr.price];
     let graphArray = [backblaze.chart, bunny.chart, scaleway.chart, vultr.chart];
 
     // убираем предыдущие классы
     for (let i = 0; i < graphArray.length; i++) {
-      graphArray[i].removeClass('low-price');
+      graphArray[i].classList.remove('low-price');
     }
     // Ищем минимальное число
     let totalLow = priceArray[0];
@@ -62,17 +70,9 @@ class Company {
     }
     // цепляем классы 
     for (let i = 0; i < lowArray.length; i++) {
-      lowArray[i].toggleClass('low-price');
+      lowArray[i].classList.toggle('low-price');
     }
   }
-
-  // static updateAllCompany(storage, transfer) {
-  //   const companies = [backblaze, bunny, scaleway, vultr];
-  //   for (let i = 0; i < companies.length; i++) {
-  //     companies[i].this.update(storage, transfer);        
-  //   }
-  // }
-
 }
 
 class Backblaze extends Company {
@@ -159,19 +159,21 @@ let
   scaleway = new Scaleway('scaleway'),
   vultr = new Vultr('vultr');
 // 
-let
+const
   storage = document.getElementById('storage'),
   transfer = document.getElementById('transfer'),
   storageTitle = document.getElementById('storage-title').querySelector('span'),
-  transferTitle = document.getElementById('transfer-title').querySelector('span');
+  transferTitle = document.getElementById('transfer-title').querySelector('span'),
+  input_bunny = document.querySelector('input[name=bunny]'),
+  input_scaleway = document.querySelector('input[name=scaleway]');
 
 document.addEventListener("DOMContentLoaded", () => {
   changeDate();
 })
-storage.addEventListener("change", () => {
+storage.addEventListener("input", () => {
   changeDate();
 })
-transfer.addEventListener("change", () => {
+transfer.addEventListener("input", () => {
   changeDate();
 })
 $(`input[name=bunny], 
@@ -187,10 +189,6 @@ function changeDate() {
   storageTitle.innerHTML = storageValue;
   transferTitle.innerHTML = transferValue;
 
-  backblaze.update(storageValue, transferValue);
-  bunny.update(storageValue, transferValue);
-  scaleway.update(storageValue, transferValue);
-  vultr.update(storageValue, transferValue);
-
-  // company.coloringMinimumValue();
+  Company.updateAllCompany(storageValue, transferValue);
+  Company.coloringMinimumValue();
 }
