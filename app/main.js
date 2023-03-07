@@ -1,22 +1,22 @@
 "use strict";
 
-class Company {
+class Provider {
 
-  constructor(nameCompany) {
-    this.chart = document.getElementById(`${nameCompany}`);
-    this.lablePrice = document.getElementById(`${nameCompany}-text`).querySelector('span');
+  constructor(nameProvider) {
+    this.chart = document.getElementById(`${nameProvider}`);
+    this.lablePrice = document.getElementById(`${nameProvider}-text`).querySelector('span');
     this.price = 0;
   }
 
-  static updateAllCompany(storage, transfer) {
+  static updateAllPriceProvider(storage, transfer) {
     const companies = [backblaze, bunny, scaleway, vultr];
 
     companies.forEach((current) => {
-      current.update(storage, transfer);
+      current.updatePrice(storage, transfer);
     })
   }
 
-  update(storage, transfer) {
+  updatePrice(storage, transfer) {
     this.calculation(storage, transfer);
     this.priceFormatting(this.price);
     this.rendering();
@@ -41,7 +41,7 @@ class Company {
     }
   }
 
-  static coloringMinimumValue() {
+  static coloringMinimumPrice() {
     let priceArray = [backblaze.price, bunny.price, scaleway.price, vultr.price];
     let graphArray = [backblaze.chart, bunny.chart, scaleway.chart, vultr.chart];
 
@@ -49,8 +49,10 @@ class Company {
     for (let i = 0; i < graphArray.length; i++) {
       graphArray[i].classList.remove('low-price');
     }
+
     // Ищем минимальное число
     let totalLow = priceArray[0];
+
     for (let i = 1; i < priceArray.length; i++) {
       if (priceArray[i] < priceArray[i - 1]) {
         if (priceArray[i] < totalLow) {
@@ -61,8 +63,10 @@ class Company {
         totalLow = priceArray[i - 1];
       }
     }
+
     // Заполняем массив элементами с мин. значением
     let lowArray = [];
+
     for (let i = 0; i < priceArray.length; i++) {
       if (priceArray[i] == totalLow) {
         lowArray.push(graphArray[i]);
@@ -75,7 +79,7 @@ class Company {
   }
 }
 
-class Backblaze extends Company {
+class Backblaze extends Provider {
 
   calculation(storage, transfer) {
     this.price = (storage * 0.005) + (transfer * 0.01);
@@ -86,12 +90,12 @@ class Backblaze extends Company {
 
 }
 
-class Bunny extends Company {
+class Bunny extends Provider {
 
   calculation(storage, transfer) {
-    let bunnyCheck = document.querySelector('input[name=bunny]:checked').value;
+    let option = document.querySelector('input[name=bunny]:checked').value;
 
-    switch (bunnyCheck) {
+    switch (option) {
       case 'hdd':
         this.price = (storage * 0.01) + (transfer * 0.01);
         break;
@@ -106,16 +110,16 @@ class Bunny extends Company {
 
 }
 
-class Scaleway extends Company {
+class Scaleway extends Provider {
 
   calculation(storage, transfer) {
     if ((storage <= 75) && (transfer <= 75)) {
       this.price = 0;
     }
     else {
-      let scalewayCheck = document.querySelector('input[name=scaleway]:checked').value;
+      let option = document.querySelector('input[name=scaleway]:checked').value;
 
-      switch (scalewayCheck) {
+      switch (option) {
         case 'multi':
           if (storage <= 75) {
             this.price = (transfer - 75) * 0.02;
@@ -140,7 +144,7 @@ class Scaleway extends Company {
 
 }
 
-class Vultr extends Company {
+class Vultr extends Provider {
 
   calculation(storage, transfer) {
     this.price = (storage * 0.01) + (transfer * 0.01);
@@ -175,6 +179,8 @@ function additionListenerChangeForSwitches() {
     } else {
       current.forEach((currentNodeList) => {
         currentNodeList.addEventListener("input", () => {
+          switchRadio = true;
+          switchRadioProvider = `${currentNodeList.name}`;
           changeDate();
         })
       })
@@ -187,7 +193,9 @@ let
   backblaze = new Backblaze('backblaze'),
   bunny = new Bunny('bunny'),
   scaleway = new Scaleway('scaleway'),
-  vultr = new Vultr('vultr');
+  vultr = new Vultr('vultr'),
+  switchRadio,
+  switchRadioProvider;
 // 
 // 
 const
@@ -208,7 +216,17 @@ function changeDate() {
     storageValue = storage.value,
     transferValue = transfer.value;
 
-  ControlPanelCurrentReadings.update(storageValue, transferValue);
-  Company.updateAllCompany(storageValue, transferValue);
-  Company.coloringMinimumValue();
+  if (switchRadio) {    
+    switch (switchRadioProvider) {
+      case 'bunny': bunny.updatePrice(storageValue, transferValue);
+      case 'scaleway': scaleway.updatePrice(storageValue, transferValue);
+    }
+  } else {
+    ControlPanelCurrentReadings.update(storageValue, transferValue);
+    Provider.updateAllPriceProvider(storageValue, transferValue);
+  }
+  
+  Provider.coloringMinimumPrice();
+
+  switchRadio = false;
 }
