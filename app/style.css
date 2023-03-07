@@ -89,6 +89,11 @@ label {
 
 .date__company-input {
   margin-top: 15px;
+  cursor: pointer;
+}
+
+.date__company-input label {
+  cursor: pointer;
 }
 
 @media (max-width: 630px) {

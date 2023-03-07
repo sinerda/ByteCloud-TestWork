@@ -13,7 +13,7 @@ class Company {
 
     companies.forEach((current) => {
       current.update(storage, transfer);
-    }, this)
+    })
   }
 
   update(storage, transfer) {
@@ -151,13 +151,13 @@ class Vultr extends Company {
 
 }
 
-// 
 // Объекты
 let
   backblaze = new Backblaze('backblaze'),
   bunny = new Bunny('bunny'),
   scaleway = new Scaleway('scaleway'),
   vultr = new Vultr('vultr');
+// 
 // 
 const
   storage = document.getElementById('storage'),
@@ -170,12 +170,19 @@ const
 document.addEventListener("DOMContentLoaded", () => {
   changeDate();
 })
-storage.addEventListener("input", () => {
-  changeDate();
-})
-transfer.addEventListener("input", () => {
-  changeDate();
-})
+
+function additionListenerChangeForSwitches() {
+  const switches = [storage, transfer, input_bunny, input_scaleway];
+
+  switches.forEach((current) => {
+    current.addEventListener("input", () => {
+      changeDate();
+    })
+  })
+}
+
+additionListenerChangeForSwitches();
+
 $(`input[name=bunny], 
     input[name=scaleway]`).change(changeDate);
 
