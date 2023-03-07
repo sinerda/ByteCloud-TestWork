@@ -96,6 +96,10 @@ label {
   cursor: pointer;
 }
 
+.date__company-input input {
+  cursor: pointer;
+}
+
 @media (max-width: 630px) {
   .calculator {
     display: flex;

@@ -151,6 +151,37 @@ class Vultr extends Company {
 
 }
 
+class ControlPanelCurrentReadings {
+
+  static update(storageValue, transferValue) {
+    const
+      storageReadings = document.getElementById('storage-title').querySelector('span'),
+      transferReadings = document.getElementById('transfer-title').querySelector('span');
+
+    storageReadings.innerHTML = storageValue;
+    transferReadings.innerHTML = transferValue;
+  }
+
+}
+
+function additionListenerChangeForSwitches() {
+  const switches = [storage, transfer, input_bunny, input_scaleway];
+
+  switches.forEach((current) => {
+    if (!NodeList.prototype.isPrototypeOf(current)) {
+      current.addEventListener("input", () => {
+        changeDate();
+      })
+    } else {
+      current.forEach((currentNodeList) => {
+        currentNodeList.addEventListener("input", () => {
+          changeDate();
+        })
+      })
+    }
+  })
+}
+
 // Объекты
 let
   backblaze = new Backblaze('backblaze'),
@@ -162,29 +193,13 @@ let
 const
   storage = document.getElementById('storage'),
   transfer = document.getElementById('transfer'),
-  storageTitle = document.getElementById('storage-title').querySelector('span'),
-  transferTitle = document.getElementById('transfer-title').querySelector('span'),
-  input_bunny = document.querySelector('input[name=bunny]'),
-  input_scaleway = document.querySelector('input[name=scaleway]');
+  input_bunny = document.querySelectorAll('.date__company-input input[name=bunny]'),
+  input_scaleway = document.querySelectorAll(".date__company-input input[name='scaleway']");
 
 document.addEventListener("DOMContentLoaded", () => {
   changeDate();
 })
-
-function additionListenerChangeForSwitches() {
-  const switches = [storage, transfer, input_bunny, input_scaleway];
-
-  switches.forEach((current) => {
-    current.addEventListener("input", () => {
-      changeDate();
-    })
-  })
-}
-
 additionListenerChangeForSwitches();
-
-$(`input[name=bunny], 
-    input[name=scaleway]`).change(changeDate);
 
 // 
 // Основная функция
@@ -193,9 +208,7 @@ function changeDate() {
     storageValue = storage.value,
     transferValue = transfer.value;
 
-  storageTitle.innerHTML = storageValue;
-  transferTitle.innerHTML = transferValue;
-
+  ControlPanelCurrentReadings.update(storageValue, transferValue);
   Company.updateAllCompany(storageValue, transferValue);
   Company.coloringMinimumValue();
 }
