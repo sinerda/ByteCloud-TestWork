@@ -1,6 +1,4 @@
-"use strict";
-
-class Provider {
+export class Provider {
 
   constructor(nameProvider) {
     this.chart = document.getElementById(`${nameProvider}`);
@@ -8,10 +6,8 @@ class Provider {
     this.price = 0;
   }
 
-  static updateAllPriceProvider(storage, transfer) {
-    const companies = [backblaze, bunny, scaleway, vultr];
-
-    companies.forEach((current) => {
+  static updateAllPriceProvider(storage, transfer, providers) {
+    providers.forEach((current) => {
       current.updatePrice(storage, transfer);
     })
   }
@@ -77,7 +73,7 @@ class Provider {
   }
 }
 
-class Backblaze extends Provider {
+export class Backblaze extends Provider {
 
   calculation(storage, transfer) {
     this.price = (storage * 0.005) + (transfer * 0.01);
@@ -88,7 +84,7 @@ class Backblaze extends Provider {
 
 }
 
-class Bunny extends Provider {
+export class Bunny extends Provider {
 
   calculation(storage, transfer) {
     let option = document.querySelector('input[name=bunny]:checked').value;
@@ -108,7 +104,7 @@ class Bunny extends Provider {
 
 }
 
-class Scaleway extends Provider {
+export class Scaleway extends Provider {
 
   calculation(storage, transfer) {
     if ((storage <= 75) && (transfer <= 75)) {
@@ -142,7 +138,7 @@ class Scaleway extends Provider {
 
 }
 
-class Vultr extends Provider {
+export class Vultr extends Provider {
 
   calculation(storage, transfer) {
     this.price = (storage * 0.01) + (transfer * 0.01);
@@ -151,77 +147,4 @@ class Vultr extends Provider {
     }
   }
 
-}
-
-class ControlPanelCurrentReadings {
-
-  static update(storageValue, transferValue) {
-    const
-      storageReadings = document.getElementById('storage-title').querySelector('span'),
-      transferReadings = document.getElementById('transfer-title').querySelector('span');
-
-    storageReadings.innerHTML = storageValue;
-    transferReadings.innerHTML = transferValue;
-  }
-
-}
-
-function additionListenerChangeForSwitches() {
-  const switches = [storage, transfer, input_bunny, input_scaleway];
-
-  switches.forEach((current) => {
-    if (!NodeList.prototype.isPrototypeOf(current)) {
-      current.addEventListener("input", () => {
-        changeDate();
-      })
-    } else {
-      current.forEach((currentNodeList) => {
-        currentNodeList.addEventListener("input", () => {
-          switchRadio = true;
-          switchRadioProvider = currentNodeList.name;
-          changeDate();
-        })
-      })
-    }
-  })
-}
-
-// Объекты
-let
-  backblaze = new Backblaze('backblaze'),
-  bunny = new Bunny('bunny'),
-  scaleway = new Scaleway('scaleway'),
-  vultr = new Vultr('vultr'),
-  switchRadio,
-  switchRadioProvider;
-// 
-// 
-const
-  storage = document.getElementById('storage'),
-  transfer = document.getElementById('transfer'),
-  input_bunny = document.querySelectorAll('.date__company-input input[name=bunny]'),
-  input_scaleway = document.querySelectorAll(".date__company-input input[name='scaleway']");
-
-document.addEventListener("DOMContentLoaded", () => {
-  changeDate();
-})
-additionListenerChangeForSwitches();
-
-// 
-// Основная функция
-function changeDate() {
-  
-  if (!switchRadio) {
-    ControlPanelCurrentReadings.update(storage.value, transfer.value);
-    Provider.updateAllPriceProvider(storage.value, transfer.value);
-  } else {
-    switch (switchRadioProvider) {
-      case 'bunny': bunny.updatePrice(storage.value, transfer.value);
-      case 'scaleway': scaleway.updatePrice(storage.value, transfer.value);
-    }
-  }
-
-  Provider.coloringMinimumPrice([backblaze, bunny, scaleway, vultr]);
-
-  switchRadio = false;
 }
