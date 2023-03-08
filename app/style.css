@@ -90,10 +90,12 @@ label {
 .date__company-input {
   margin-top: 15px;
   cursor: pointer;
+  user-select: none;
 }
 
 .date__company-input label {
   cursor: pointer;
+  user-select: none;
 }
 
 .date__company-input input {

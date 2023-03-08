@@ -41,40 +41,38 @@ class Provider {
     }
   }
 
-  static coloringMinimumPrice() {
-    let priceArray = [backblaze.price, bunny.price, scaleway.price, vultr.price];
-    let graphArray = [backblaze.chart, bunny.chart, scaleway.chart, vultr.chart];
+  static coloringMinimumPrice(providers) {
 
-    // убираем предыдущие классы
-    for (let i = 0; i < graphArray.length; i++) {
-      graphArray[i].classList.remove('low-price');
+    // убираем классы от предыдущей колоризации
+    for (let i = 0; i < providers.length; i++) {
+      providers[i].chart.classList.remove('low-price');
     }
 
     // Ищем минимальное число
-    let totalLow = priceArray[0];
+    let minimalNumber = providers[0].price;
 
-    for (let i = 1; i < priceArray.length; i++) {
-      if (priceArray[i] < priceArray[i - 1]) {
-        if (priceArray[i] < totalLow) {
-          totalLow = priceArray[i];
+    for (let i = 1; i < providers.length; i++) {
+      if (providers[i].price < providers[i - 1].price) {
+        if (providers[i].price < minimalNumber) {
+          minimalNumber = providers[i].price;
         }
       }
-      else if (priceArray[i - 1] < totalLow) {
-        totalLow = priceArray[i - 1];
+      else if (providers[i - 1].price < minimalNumber) {
+        minimalNumber = providers[i - 1].price;
       }
     }
 
-    // Заполняем массив элементами с мин. значением
-    let lowArray = [];
+    let providersWithMinimumPrices = [];
 
-    for (let i = 0; i < priceArray.length; i++) {
-      if (priceArray[i] == totalLow) {
-        lowArray.push(graphArray[i]);
+    for (let i = 0; i < providers.length; i++) {
+      if (providers[i].price == minimalNumber) {
+        providersWithMinimumPrices.push(providers[i].chart);
       }
     }
+
     // цепляем классы 
-    for (let i = 0; i < lowArray.length; i++) {
-      lowArray[i].classList.toggle('low-price');
+    for (let i = 0; i < providersWithMinimumPrices.length; i++) {
+      providersWithMinimumPrices[i].classList.toggle('low-price');
     }
   }
 }
@@ -180,7 +178,7 @@ function additionListenerChangeForSwitches() {
       current.forEach((currentNodeList) => {
         currentNodeList.addEventListener("input", () => {
           switchRadio = true;
-          switchRadioProvider = `${currentNodeList.name}`;
+          switchRadioProvider = currentNodeList.name;
           changeDate();
         })
       })
@@ -212,21 +210,18 @@ additionListenerChangeForSwitches();
 // 
 // Основная функция
 function changeDate() {
-  let
-    storageValue = storage.value,
-    transferValue = transfer.value;
-
-  if (switchRadio) {    
-    switch (switchRadioProvider) {
-      case 'bunny': bunny.updatePrice(storageValue, transferValue);
-      case 'scaleway': scaleway.updatePrice(storageValue, transferValue);
-    }
-  } else {
-    ControlPanelCurrentReadings.update(storageValue, transferValue);
-    Provider.updateAllPriceProvider(storageValue, transferValue);
-  }
   
-  Provider.coloringMinimumPrice();
+  if (!switchRadio) {
+    ControlPanelCurrentReadings.update(storage.value, transfer.value);
+    Provider.updateAllPriceProvider(storage.value, transfer.value);
+  } else {
+    switch (switchRadioProvider) {
+      case 'bunny': bunny.updatePrice(storage.value, transfer.value);
+      case 'scaleway': scaleway.updatePrice(storage.value, transfer.value);
+    }
+  }
+
+  Provider.coloringMinimumPrice([backblaze, bunny, scaleway, vultr]);
 
   switchRadio = false;
 }
