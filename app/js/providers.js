@@ -1,9 +1,17 @@
+import { maximumPriceOfAll } from "./main.js";
+
 export class Provider {
 
   constructor(nameProvider) {
     this.chart = document.getElementById(`${nameProvider}`);
     this.lablePrice = document.getElementById(`${nameProvider}-text`).querySelector('span');
+    this.graph = document.getElementById(`${nameProvider}-graph`);
     this.price = 0;
+    this.percentageOfMax = 0;
+  }
+
+  maximumPriceOfProvider(maxStorage, maxTransfer) {
+    return this.calculation(maxStorage, maxTransfer);
   }
 
   static updateAllPriceProvider(storage, transfer, providers) {
@@ -15,6 +23,7 @@ export class Provider {
   updatePrice(storage, transfer) {
     this.calculation(storage, transfer);
     this.priceFormatting(this.price);
+    this.percentageOfMaxPrice(maximumPriceOfAll, this.price);
     this.rendering();
   }
 
@@ -22,23 +31,46 @@ export class Provider {
     this.price = Number(inputPrice.toFixed(2));
   }
 
+  percentageOfMaxPrice(maxPrice, price) {
+    this.percentageOfMax = ((price / maxPrice) * 100);
+  }
+  
   rendering() {
     this.lablePrice.innerText = this.price;
-    this.chartDrawing(this.chart, this.price);
+    this.chartDrawing(this.graph, this.price, this.percentageOfMax);
   };
 
-  chartDrawing(company, price) {
-    const _630px = window.matchMedia("(max-width: 630px)");
+  chartDrawing(company, price, percentage) {
+    const 
+      _630px = window.matchMedia("(max-width: 630px)");
 
     if (!_630px.matches) {
-      company.style.height = `${price * 4}px`;
+      company.style.height = `${percentage}%`;
     } else {
-      company.style.width = `${price * 5}px`;
+      company.style.width = `${percentage}%`;
+    }
+  }
+
+  static redrawing(providers, screenMode) {
+    providers.forEach((current) => {
+      current.chartRedrawing(current.graph, current.price, screenMode);
+    })
+  }
+
+  chartRedrawing(company, price, percentage, screenMode) {
+    switch (screenMode) {
+      case 'portrait':
+        company.style.height = '35px';
+        company.style.width = `${percentage}%`;
+        break;
+      case 'landscape':
+        company.style.width = '90px';
+        company.style.height = `${price * 4}px`;
+        break;
     }
   }
 
   static coloringMinimumPrice(providers) {
-
     // убираем классы от предыдущей колоризации
     for (let i = 0; i < providers.length; i++) {
       providers[i].chart.classList.remove('low-price');
@@ -80,6 +112,7 @@ export class Backblaze extends Provider {
     if (this.price < 7) {
       this.price = 7;
     }
+    return this.price;
   }
 
 }
@@ -100,6 +133,7 @@ export class Bunny extends Provider {
     if (this.price > 10) {
       this.price = 10;
     }
+    return this.price;
   }
 
 }
@@ -134,6 +168,7 @@ export class Scaleway extends Provider {
           }
       }
     }
+    return this.price;
   }
 
 }
@@ -145,6 +180,7 @@ export class Vultr extends Provider {
     if (this.price < 5) {
       this.price = 5;
     }
+    return this.price;
   }
 
 }
