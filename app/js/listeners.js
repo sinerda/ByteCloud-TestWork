@@ -6,8 +6,8 @@ export let
   switchRadio,
   switchRadioProvider;
 
-let 
-  limiterResize = 0,
+let
+  limiterRedraw = 0,
   portraitMode = false;
 
 
@@ -16,29 +16,29 @@ export function additionListener() {
     indicatorUpdate();
   })
   window.addEventListener('resize', function () {
-    const windowWidth = this.window.innerWidth;   
+    const windowWidth = this.window.innerWidth;
 
-    const startOfCount = function() {
-      limiterResize = 0;
-      limiterResize++;
-    }   
+    const startOfCount = function () {
+      limiterRedraw = 0;
+      limiterRedraw++;
+    }
 
-    if ((windowWidth < 630) && (!portraitMode)) {
+    if ((windowWidth < 631) && (!portraitMode)) {
       portraitMode = true;
       startOfCount();
     }
-    if ((windowWidth > 630) && (portraitMode)) {
+    if ((windowWidth >= 631) && (portraitMode)) {
       portraitMode = false;
       startOfCount();
     }
 
-    if ((portraitMode) && (limiterResize < 2)) {
-      limiterResize++;
-      Provider.redrawing(providers, 'portrait');
+    if ((portraitMode) && (limiterRedraw < 2) && (windowWidth < 631)) {
+      limiterRedraw++;
+      Provider.redrawingAll(providers, 'portrait');
     }
-    if ((!portraitMode) && (limiterResize < 2)) {
-      limiterResize++;
-      Provider.redrawing(providers, 'landscape');
+    if ((!portraitMode) && (limiterRedraw < 2) && (windowWidth >= 631)) {
+      limiterRedraw++;
+      Provider.redrawingAll(providers, 'landscape');
     }
   })
   additionListenerChangeForSwitches(switches);

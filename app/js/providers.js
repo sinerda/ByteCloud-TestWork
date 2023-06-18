@@ -1,11 +1,11 @@
-import { maximumPriceOfAll } from "./main.js";
+import { maximumPriceOfAll, _630px } from "./main.js";
 
 export class Provider {
 
   constructor(nameProvider) {
-    this.chart = document.getElementById(`${nameProvider}`);
+    this.graph = document.getElementById(`${nameProvider}`);
     this.lablePrice = document.getElementById(`${nameProvider}-text`).querySelector('span');
-    this.graph = document.getElementById(`${nameProvider}-graph`);
+    this.priceBox = document.getElementById(`${nameProvider}-text`);
     this.price = 0;
     this.percentageOfMax = 0;
   }
@@ -34,38 +34,78 @@ export class Provider {
   percentageOfMaxPrice(maxPrice, price) {
     this.percentageOfMax = ((price / maxPrice) * 100);
   }
-  
+
   rendering() {
     this.lablePrice.innerText = this.price;
-    this.chartDrawing(this.graph, this.price, this.percentageOfMax);
+    this.chartDrawing(this.graph, this.priceBox, this.percentageOfMax);
   };
 
-  chartDrawing(company, price, percentage) {
-    const 
-      _630px = window.matchMedia("(max-width: 630px)");
-
+  chartDrawing(chart, price, percentage) {
+    const fractionality = this.integerOrNot(this.lablePrice);
     if (!_630px.matches) {
-      company.style.height = `${percentage}%`;
-    } else {
-      company.style.width = `${percentage}%`;
+      chart.style.height = `${percentage}%`;
+      this.fractionalPriceRendering(fractionality, price, chart, 'landscape');
+    }
+    else {
+      chart.style.width = `${percentage}%`;
+      this.fractionalPriceRendering(fractionality, price, chart, 'portrait');
     }
   }
 
-  static redrawing(providers, screenMode) {
+  integerOrNot(price) {
+    return Number.isInteger(parseFloat(price.innerText));
+  }
+
+  fractionalPriceRendering(integerOrNot, price, chart, screenMode) {
+    const render = function (width) {
+      if (chart.offsetWidth < width) {
+        price.style.marginLeft = `${chart.offsetWidth + 15}px`;
+      }
+      else {
+        price.style.marginLeft = '0px';
+      }
+    }
+
+    switch (screenMode) {
+      case 'portrait':
+        if (integerOrNot) {
+          render(30);
+        }
+        else {
+          render(50);
+        }
+        break;
+      case 'landscape':
+        if (chart.offsetHeight < 30) {
+          price.style.bottom = '35px';
+        }
+        else {
+          price.style.bottom = '0px';
+        }
+        break;
+    }
+  }
+
+  static redrawingAll(providers, screenMode) {
     providers.forEach((current) => {
-      current.chartRedrawing(current.graph, current.price, screenMode);
+      current.chartRedrawing(current.graph, current.percentageOfMax, current.lablePrice, current.priceBox, screenMode);
     })
   }
 
-  chartRedrawing(company, price, percentage, screenMode) {
+  chartRedrawing(chart, percentage, price, priceBox, screenMode) {
+    const fractionality = this.integerOrNot(price);
     switch (screenMode) {
       case 'portrait':
-        company.style.height = '35px';
-        company.style.width = `${percentage}%`;
+        chart.style.height = '46px';
+        chart.style.width = `${percentage}%`;
+        priceBox.style.bottom = '0px';
+        this.fractionalPriceRendering(fractionality, priceBox, chart, screenMode);
         break;
       case 'landscape':
-        company.style.width = '90px';
-        company.style.height = `${price * 4}px`;
+        chart.style.width = '90px';
+        chart.style.height = `${percentage}%`;
+        priceBox.style.marginLeft = '0px';
+        this.fractionalPriceRendering(fractionality, priceBox, chart, screenMode);
         break;
     }
   }
@@ -73,7 +113,7 @@ export class Provider {
   static coloringMinimumPrice(providers) {
     // убираем классы от предыдущей колоризации
     for (let i = 0; i < providers.length; i++) {
-      providers[i].chart.classList.remove('low-price');
+      providers[i].graph.classList.remove('low-price');
     }
 
     // Ищем минимальное число
@@ -94,7 +134,7 @@ export class Provider {
 
     for (let i = 0; i < providers.length; i++) {
       if (providers[i].price == minimalNumber) {
-        providersWithMinimumPrices.push(providers[i].chart);
+        providersWithMinimumPrices.push(providers[i].graph);
       }
     }
 
@@ -114,7 +154,6 @@ export class Backblaze extends Provider {
     }
     return this.price;
   }
-
 }
 
 export class Bunny extends Provider {
@@ -135,7 +174,6 @@ export class Bunny extends Provider {
     }
     return this.price;
   }
-
 }
 
 export class Scaleway extends Provider {
@@ -170,7 +208,6 @@ export class Scaleway extends Provider {
     }
     return this.price;
   }
-
 }
 
 export class Vultr extends Provider {
@@ -182,5 +219,4 @@ export class Vultr extends Provider {
     }
     return this.price;
   }
-
 }
