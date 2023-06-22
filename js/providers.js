@@ -4,7 +4,7 @@ export class Provider {
 
   constructor(nameProvider) {
     this.graph = document.getElementById(`${nameProvider}`);
-    this.lablePrice = document.getElementById(`${nameProvider}-text`).querySelector('span');
+    this.displayPrice = document.getElementById(`${nameProvider}-text`).querySelector('span');
     this.priceBox = document.getElementById(`${nameProvider}-text`);
     this.price = 0;
     this.percentageOfMax = 0;
@@ -36,12 +36,13 @@ export class Provider {
   }
 
   rendering() {
-    this.lablePrice.innerText = this.price;
+    this.displayPrice.innerText = this.price;
     this.chartDrawing(this.graph, this.priceBox, this.percentageOfMax);
   };
 
   chartDrawing(chart, price, percentage) {
-    const fractionality = this.integerOrNot(this.lablePrice);
+    const fractionality = this.integerOrNot(this.displayPrice);
+
     if (!_630px.matches) {
       chart.style.height = `${percentage}%`;
       this.fractionalPriceRendering(fractionality, price, chart, 'landscape');
@@ -57,7 +58,7 @@ export class Provider {
   }
 
   fractionalPriceRendering(integerOrNot, price, chart, screenMode) {
-    const render = function (width) {
+    const render = (width) => {
       if (chart.offsetWidth < width) {
         price.style.marginLeft = `${chart.offsetWidth + 15}px`;
       }
@@ -68,12 +69,7 @@ export class Provider {
 
     switch (screenMode) {
       case 'portrait':
-        if (integerOrNot) {
-          render(30);
-        }
-        else {
-          render(50);
-        }
+        (integerOrNot) ? render(30) : render(50);
         break;
       case 'landscape':
         if (chart.offsetHeight < 30) {
@@ -88,12 +84,13 @@ export class Provider {
 
   static redrawingAll(providers, screenMode) {
     providers.forEach((current) => {
-      current.chartRedrawing(current.graph, current.percentageOfMax, current.lablePrice, current.priceBox, screenMode);
+      current.chartRedrawing(current.graph, current.percentageOfMax, current.displayPrice, current.priceBox, screenMode);
     })
   }
 
   chartRedrawing(chart, percentage, price, priceBox, screenMode) {
     const fractionality = this.integerOrNot(price);
+
     switch (screenMode) {
       case 'portrait':
         chart.style.height = '46px';
@@ -129,7 +126,7 @@ export class Provider {
         minimalNumber = providers[i - 1].price;
       }
     }
-
+    // создаём массив провайдеров с минимальной ценой
     let providersWithMinimumPrices = [];
 
     for (let i = 0; i < providers.length; i++) {

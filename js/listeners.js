@@ -4,7 +4,7 @@ import { Provider } from "./providers.js";
 
 export let
   switchRadio,
-  switchRadioProvider;
+  radioProviderName;
 
 let
   limiterRedraw = 0,
@@ -12,9 +12,6 @@ let
 
 
 export function additionListener() {
-  document.addEventListener("DOMContentLoaded", () => {
-    indicatorUpdate();
-  })
   window.addEventListener('resize', function () {
     const windowWidth = this.window.innerWidth;
 
@@ -41,25 +38,27 @@ export function additionListener() {
       Provider.redrawingAll(providers, 'landscape');
     }
   })
-  additionListenerChangeForSwitches(switches);
+
+  listenerChangeForSwitches(switches);
 }
 
-export function additionListenerChangeForSwitches(switches) {
+export function listenerChangeForSwitches(switches) {
   switches.forEach((current) => {
-    if (!NodeList.prototype.isPrototypeOf(current)) {
-      current.addEventListener("input", () => {
-        indicatorUpdate();
-      })
-    } else {
+    if (NodeList.prototype.isPrototypeOf(current)) {
       current.forEach((currentNodeList) => {
         currentNodeList.addEventListener("input", () => {
           switchRadio = true;
-          switchRadioProvider = currentNodeList.name;
+          radioProviderName = currentNodeList.name;
 
           indicatorUpdate();
 
           switchRadio = false;
         })
+      })
+    }
+    else {
+      current.addEventListener("input", () => {
+        indicatorUpdate();
       })
     }
   })
